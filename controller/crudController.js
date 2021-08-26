@@ -6,15 +6,16 @@ exports.getData = async(req,res) => {
         const data = await crudDb.find();
         res.status(200).json(data);
     } catch(error) {
-        res.status(404).json({message: error.message});
+        console.log("ERROR:", error.message);
     }
 }
+
 
 exports.createData = async(req,res) => {
     console.log(req.body);
     const newData = new crudDb({
         name:req.body.name,
-        img:req.body.img,
+        img:req.file.filename,
         summary:req.body.summary
     })
     try { 
@@ -26,40 +27,36 @@ exports.createData = async(req,res) => {
             const result = await crudDb(newData).save();
             res.status(201).json({"Created Data": result});
         }
-            
- 
-   
     } catch(error) {
-        res.status(404).json({message: error.message});
+        console.log("ERROR:", error.message);
     }
 }
 
 exports.updateData = async(req,res) => {
-    console.log(req.body);
+    console.log(req.body,req.query);
     const name = req.body.name;
+    const id = req.query.id;
     try { 
-        await crudDb.findOneAndUpdate({name: name},{
-            $set: {
+        await crudDb.findByIdAndUpdate(id, {
                 name: req.body.name,
                 img: req.body.img,
                 summary: req.body.summary
               }
-        }).then(res => {
-            res.status(201).json({"updated Data":res});
+        ).then(result => {
+            res.status(201).json({"updated Data":result});
         }).catch(err=> console.log(err));
     } catch(error) {
-        res.status(404).json({message: error.message});
+        console.log("ERROR:", error.message);
     }
 }
 
 exports.deleteData = async(req,res) => {
-    console.log(req.body);
-    console.log(req.params);
-    const name = req.body.name;
+    const id = req.query.id;
     try { 
-        const result = await crudDb.deleteOne({name: name})
+        const result = await crudDb.findOneAndDelete({_id: id})
         res.status(201).json({"Deleted Data":result});
     } catch(error) {
-        res.status(404).json({message: error.message});
+        console.log("ERROR:", error.message);
     }
 }
+

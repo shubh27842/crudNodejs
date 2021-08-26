@@ -2,10 +2,13 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyparser = require("body-parser");
 const crud = require("./routes/crud.js");
+require('dotenv').config();
 const app = express();
 
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
+
+app.use("/assets/uploads", express.static(__dirname + "/assets/uploads"));
 
 app.use("/crud",crud);
 
@@ -36,7 +39,7 @@ app.get("/", (req,res) => {
 
 mongoose
     .connect(
-        "mongodb+srv://Shubham:Shubh@health@19@cluster0.wyyca.mongodb.net/healthShiftDB?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true }
+        process.env.DATABASE, { useNewUrlParser: true, useUnifiedTopology: true }
     )
     .then(() => {
         console.log("DB Connected!!!")
